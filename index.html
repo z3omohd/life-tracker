@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نظام متابعة الاستهلاك وصيانة الأحداث</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tajawal Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Prevent iOS Auto-Zoom */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <div class="max-w-4xl mx-auto px-3 sm:px-6 py-6">
+        
+        <!-- Header Section -->
+        <header class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-500 text-white p-3 rounded-2xl shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid fa-car-battery text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">متابع الصلاحية والاستهلاك</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">متابعة صيانة السيارة والأحداث دورياً</p>
+                </div>
+            </div>
+
+            <button onclick="toggleDarkMode()" class="p-2.5 bg-slate-200 dark:bg-slate-800 rounded-xl text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                <i class="fa-solid fa-moon text-amber-500 dark:hidden"></i>
+                <i class="fa-solid fa-sun text-amber-400 hidden dark:inline"></i>
+            </button>
+        </header>
+
+        <!-- New Item Form -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm p-4 sm:p-6 mb-6">
+            <h2 class="text-base sm:text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-amber-500"></i>
+                إضافة حدث / قطعة جديدة للمتابعة
+            </h2>
+
+            <form id="itemForm" onsubmit="saveItem(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Title -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium mb-1">اسم الحدث / القطعة <span class="text-rose-500">*</span></label>
+                        <input type="text" id="itemName" required placeholder="مثال: زيت المحرك، كفرات السيارة..." class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium mb-1">التصنيف</label>
+                        <select id="itemCategory" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                            <option value="سيارة 🚗">سيارة 🚗</option>
+                            <option value="منزل 🏠">منزل 🏠</option>
+                            <option value="أجهزة 💻">أجهزة 💻</option>
+                            <option value="شخصي 👤">شخصي 👤</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                    <!-- Start Date -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium mb-1">تاريخ التركيب / البداية <span class="text-rose-500">*</span></label>
+                        <input type="date" id="itemStartDate" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                    </div>
+
+                    <!-- Duration Value -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium mb-1">العمر الافتراضي <span class="text-rose-500">*</span></label>
+                        <input type="number" id="itemDurationValue" min="1" required placeholder="مثال: 4" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                    </div>
+
+                    <!-- Duration Unit -->
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium mb-1">وحدة المدة</label>
+                        <select id="itemDurationUnit" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 focus:ring-2 focus:ring-amber-500 focus:outline-none transition">
+                            <option value="months">أشهر</option>
+                            <option value="years">سنوات</option>
+                            <option value="days">أيام</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-sm sm:text-base">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>إضافة وسحب العداد</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Tracked Items List Grid -->
+        <div id="itemsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamic Cards -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="p-12 text-center text-slate-400 dark:text-slate-500 hidden">
+            <i class="fa-solid fa-clock-rotate-left text-5xl mb-3"></i>
+            <p>لا توجد عناصر مضافة حتى الآن</p>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let db;
+        let items = [];
+
+        // Set default date to today
+        document.getElementById('itemStartDate').valueAsDate = new Date();
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Init IndexedDB
+        function initDB() {
+            const request = indexedDB.open("LifeTrackerDB", 1);
+            request.onupgradeneeded = (e) => {
+                db = e.target.result;
+                if (!db.objectStoreNames.contains("trackerItems")) {
+                    db.createObjectStore("trackerItems", { keyPath: "id" });
+                }
+            };
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                loadItems();
+            };
+        }
+
+        function saveItem(event) {
+            event.preventDefault();
+            const item = {
+                id: Date.now().toString(),
+                name: document.getElementById('itemName').value.trim(),
+                category: document.getElementById('itemCategory').value,
+                startDate: document.getElementById('itemStartDate').value,
+                durationValue: parseInt(document.getElementById('itemDurationValue').value),
+                durationUnit: document.getElementById('itemDurationUnit').value
+            };
+
+            const tx = db.transaction("trackerItems", "readwrite");
+            const store = tx.objectStore("trackerItems");
+            store.put(item);
+            tx.oncomplete = () => {
+                document.getElementById('itemForm').reset();
+                document.getElementById('itemStartDate').valueAsDate = new Date();
+                loadItems();
+            };
+        }
+
+        function loadItems() {
+            const tx = db.transaction("trackerItems", "readonly");
+            const store = tx.objectStore("trackerItems");
+            const request = store.getAll();
+            request.onsuccess = () => {
+                items = request.result;
+                renderItems();
+            };
+        }
+
+        function calculateProgress(startDateStr, durationValue, durationUnit) {
+            const start = new Date(startDateStr);
+            const today = new Date();
+            
+            // Calculate total days required
+            let totalDays = 0;
+            if (durationUnit === 'days') totalDays = durationValue;
+            else if (durationUnit === 'months') totalDays = durationValue * 30.4375; // Average days per month
+            else if (durationUnit === 'years') totalDays = durationValue * 365.25;
+
+            // Calculate passed days
+            const diffTime = today - start;
+            const passedDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+            
+            const remainingDays = Math.max(0, Math.ceil(totalDays - passedDays));
+            let percentage = Math.round(((totalDays - passedDays) / totalDays) * 100);
+
+            if (percentage < 0) percentage = 0;
+            if (percentage > 100) percentage = 100;
+
+            return { percentage, remainingDays, passedDays, totalDays: Math.round(totalDays) };
+        }
+
+        function renderItems() {
+            const container = document.getElementById('itemsContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            items.forEach(item => {
+                const { percentage, remainingDays } = calculateProgress(item.startDate, item.durationValue, item.durationUnit);
+                
+                // Color Logic based on percentage
+                let statusColor = 'bg-emerald-500';
+                let textColor = 'text-emerald-600 dark:text-emerald-400';
+                let statusText = 'حالة ممتازة';
+
+                if (percentage <= 20 && percentage > 0) {
+                    statusColor = 'bg-rose-500';
+                    textColor = 'text-rose-500';
+                    statusText = 'استهلاك حرِج / قريب للانتهاء';
+                } else if (percentage <= 50) {
+                    statusColor = 'bg-amber-500';
+                    textColor = 'text-amber-500';
+                    statusText = 'منتصف العمر الافتراضي';
+                } else if (percentage === 0) {
+                    statusColor = 'bg-slate-400';
+                    textColor = 'text-slate-500';
+                    statusText = 'انتهت الصلاحية (مستهلك 100%)';
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-4 shadow-sm flex flex-col justify-between";
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 font-medium text-slate-600 dark:text-slate-300">${item.category}</span>
+                                <h3 class="text-lg font-bold mt-1">${item.name}</h3>
+                            </div>
+                            <button onclick="deleteItem('${item.id}')" class="text-slate-400 hover:text-rose-500 transition p-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="flex justify-between items-end mb-1">
+                                <span class="text-xs font-semibold ${textColor}">${statusText}</span>
+                                <span class="text-2xl font-black ${textColor}">${percentage}%</span>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="w-full h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                <div class="h-full ${statusColor} transition-all duration-500" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                            <span>تاريخ البداية: ${item.startDate}</span>
+                            <span>المتبقي: <b>${remainingDays}</b> يوم</span>
+                        </div>
+                    </div>
+
+                    <button onclick="resetItem('${item.id}')" class="mt-4 w-full py-2 bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-600 dark:bg-slate-700 dark:hover:bg-emerald-950/40 dark:text-slate-200 dark:hover:text-emerald-400 font-semibold rounded-xl transition text-xs flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-600">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>تجديد / تم التغيير اليوم (100%)</span>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function resetItem(id) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const tx = db.transaction("trackerItems", "readwrite");
+            const store = tx.objectStore("trackerItems");
+            const req = store.get(id);
+            req.onsuccess = () => {
+                const item = req.result;
+                item.startDate = todayStr;
+                store.put(item);
+                tx.oncomplete = () => loadItems();
+            };
+        }
+
+        function deleteItem(id) {
+            if (confirm("هل تريد حذف هذا العنصر؟")) {
+                const tx = db.transaction("trackerItems", "readwrite");
+                const store = tx.objectStore("trackerItems");
+                store.delete(id);
+                tx.oncomplete = () => loadItems();
+            }
+        }
+
+        window.onload = initDB;
+    </script>
+</body>
+</html>
+

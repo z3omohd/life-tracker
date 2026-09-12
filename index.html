@@ -313,18 +313,7 @@ function resetItem(id) {
 }
 
    
-        function resetItem(id) {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const tx = db.transaction("trackerItems", "readwrite");
-            const store = tx.objectStore("trackerItems");
-            const req = store.get(id);
-            req.onsuccess = () => {
-                const item = req.result;
-                item.startDate = todayStr;
-                store.put(item);
-                tx.oncomplete = () => loadItems();
-            };
-        }
+
 
         function deleteItem(id) {
             if (confirm("هل تريد حذف هذا العنصر؟")) {

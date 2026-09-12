@@ -293,7 +293,26 @@
                 container.appendChild(card);
             });
         }
+function resetItem(id) {
+  if (confirm("هل تم تغيير/تجديد هذه القطعة اليوم فعلاً؟ سيتم إعادة ضبط العداد إلى 100%.")) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const tx = db.transaction("trackerItems", "readwrite");
+    const store = tx.objectStore("trackerItems");
+    const request = store.get(id);
 
+    request.onsuccess = () => {
+      const item = request.result;
+      if (item) {
+        item.startDate = todayStr;
+        store.put(item);
+      }
+    };
+
+    tx.oncomplete = () => loadItems();
+  }
+}
+
+   
         function resetItem(id) {
             const todayStr = new Date().toISOString().split('T')[0];
             const tx = db.transaction("trackerItems", "readwrite");

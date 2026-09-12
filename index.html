@@ -2,6 +2,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+
+    
+<!-- PWA Manifest & Theme Color -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f59e0b">
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نظام متابعة الاستهلاك وصيانة الأحداث</title>
@@ -13,6 +20,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <script>
+
+        
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -309,6 +318,15 @@
 
         window.onload = initDB;
     </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js');
+    });
+  }
+</script>
+
+
 </body>
 </html>
 
